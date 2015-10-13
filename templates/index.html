@@ -1,0 +1,33 @@
+<html>
+    <head>
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+        <meta http-equiv="refresh" content="5" />
+    </head>
+    <body>
+        <div class="container">
+            <div class="progress">
+                <div class="progress-bar {{args.success}}" role="progressbar" aria-valuenow="{{args.percent}}" aria-valuemin="0" aria-valuemax="100" style="width: {{args.percent}}%;">
+                {{args.count}}
+              </div>
+            </div>
+            <div class="alert {{args.format}}">POST data formatting</div>
+            <div class="alert {{args.unique}}">ID uniqueness</div>
+            <a href=""><button type="button" class="btn btn-primary">Refresh Tests</button></a>
+            <a href="/purge"><button type="button" class="btn btn-danger">Delete all uploaded data</button></a>
+            {% if args.success == "progress-bar-success" %}
+            <h1>Everything looks good here.</h1>
+            {% else %}
+            <h1>Instructions</h1>
+            <p><a href="/static/data.csv">Here</a> is a CSV file with patient image metadata and notes.</p>
+            <p>This data needs to have fields with patient health information (PHI) removed, then it needs to be submitted to this site as JSON encoded objects with the following format.</p>
+            <code>
+                { 'id':string,
+                'type':string,
+                'description':string,
+                'file_path':string,
+                'notes':[string, string, ...] }
+            </code>
+            {% endif %}
+        </div>
+    </body>
+</html>
