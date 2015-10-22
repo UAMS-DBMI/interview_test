@@ -1,4 +1,5 @@
 from flask import Flask, request, redirect, url_for, render_template
+import re
 
 app = Flask(__name__)
 uploaded = []
@@ -7,14 +8,16 @@ uploaded = []
 def landing():
     formatted = check_format()
     unique = False
+    sanitize = False
     if formatted:
         unique = check_ids()
+        sanitize = check_sanitize()
     count = len(uploaded)
     percent = int((count / 100.0) * 100)
     success = 'progress-bar-info'
     if percent == 100 and formatted and unique:
         success = 'progress-bar-success'
-    if not unique or not formatted or percent > 100:
+    if not sanitize or not unique or not formatted or percent > 100:
         success = 'progress-bar-danger'
     if formatted:
         format_style = 'alert-success'
@@ -24,8 +27,12 @@ def landing():
         unique_style = 'alert-success'
     else:
         unique_style = 'alert-danger'
+    if sanitize:
+        sanitize_style = 'alert-success'
+    else:
+        sanitize_style = 'alert-danger'
     args = {'unique': unique_style, 'format': format_style, 'count':count,
-            'percent':percent, 'success': success}
+            'percent':percent, 'success': success, 'sanitize': sanitize_style}
     return render_template('index.html', args=args)
 
 @app.route('/image', methods=['POST'])
@@ -62,6 +69,17 @@ def check_format():
         if 'notes' not in data.keys():
             return False
     return True
+
+pattern = re.compile('UAMS_\d+')
+def check_sanitize():
+    for data in uploaded:
+        for note in data['notes']:
+            if pattern.match(str(note)):
+                return False
+        if pattern.match(str(data['id'])):
+            return False
+    return True
+
 
 if __name__ == '__main__':
     app.debug = True

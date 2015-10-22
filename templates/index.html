@@ -12,21 +12,69 @@
             </div>
             <div class="alert {{args.format}}">POST data formatting</div>
             <div class="alert {{args.unique}}">ID uniqueness</div>
-            <a href=""><button type="button" class="btn btn-primary">Refresh Tests</button></a>
+            <div class="alert {{args.sanitize}}">Data Sanity</div>
             <a href="/purge"><button type="button" class="btn btn-danger">Delete all uploaded data</button></a>
             {% if args.success == "progress-bar-success" %}
             <h1>Everything looks good here.</h1>
             {% else %}
             <h1>Instructions</h1>
-            <p><a href="/static/data.csv">Here</a> is a CSV file with patient image metadata and notes.</p>
-            <p>This data needs to have fields with patient health information (PHI) removed, then it needs to be submitted to this site as JSON encoded objects with the following format.</p>
-            <code>
-                { 'id':string,
-                'type':string,
-                'description':string,
-                'file_path':string,
-                'notes':[string, string, ...] }
-            </code>
+            <p><a href="/static/data.csv">Here</a> is an example CSV file with patient image metadata and notes, extracted from a theoretical system.</p>
+            <p>This data needs to be slightly converted and sanitized into a JSON object with the following format.</p>
+            <code style="white-space:pre">{
+    'id':string,
+    'type':string,
+    'description':string,
+    'file_path':string,
+    'notes':[string, string, ...]
+}</code>
+            <table class="table table-bordered">
+                <tbody>
+                    <tr>
+                        <td class="active">CSV field name</td>
+                        <td>name</td>
+                        <td>patient_id</td>
+                        <td>type</td>
+                        <td>description</td>
+                        <td>file_patd</td>
+                        <td>note1</td>
+                        <td>note2</td>
+                        <td>note3</td>
+                        <td>note4</td>
+                    </tr>
+                    <tr>
+                        <td class="active">Operation</td>
+                        <td>Discard</td>
+                        <td>Convert to new ID per instructions below</td>
+                        <td>Preserve</td>
+                        <td>Preserve</td>
+                        <td>Preserve</td>
+                        <td>Sanitize</td>
+                        <td>Sanitize</td>
+                        <td>Sanitize</td>
+                        <td>Sanitize</td>
+                    </tr>
+                    <tr>
+                        <td class="active">JSON field name</td>
+                        <td></td>
+                        <td>id</td>
+                        <td>type</td>
+                        <td>description</td>
+                        <td>file_path</td>
+                        <td>notes</td>
+                        <td>notes</td>
+                        <td>notes</td>
+                        <td>notes</td>
+                    </tr>
+                </tbody>
+            </table>
+            <p>This JSON object needs to be uploaded in the body of a <em>POST</em> request to the url <code>http://localhost:5000/image</code> with the HTTP header <code>Content-Type: application/json</code>.</p>
+            <h3>Data Sanitation</h3>
+            <p>In the theoretical system the note fields are plain text and sometimes users will improperly store patient identifying information here.  Before uploading the JSON object check the note fields for both the patients ID or their first or last name replacing them with "ID" or "NAME". (As a hint, the first row of the CSV contains an example of both. And as a warning, the server has no way of testing for the names only patient ID)</p>
+            <h3>New IDs</h3>
+            <p>The patient ID is a source of identifying information so it should be converted into a new sequence object that has no relation to the origial value, before being uploaded into the new system.</p>
+            <h3>Grading</h3>
+            <p>For our sake please comment/document your code as if someone would need to understand your reasoning and possibly extend your work.</p>
+            <p>As data is uploaded this page will automatically refresh informing you of progress and data correctness.  When these instructions disappear that indicates a successful upload.  If you need run your program more than once, the red button above will remove all uploaded data.</p>
             {% endif %}
         </div>
     </body>
